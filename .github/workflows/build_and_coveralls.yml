@@ -38,8 +38,8 @@ jobs:
         run: sudo apt install -y lcov
       
       # Install some system pacakges
-      - name: Install dependencies
-        run: sh requirements.sh
+      # - name: Install dependencies
+      #   run: sh requirements.sh
 
       # Run CMake to setup compilation flags
       - name: Configure Coverage CMake 
