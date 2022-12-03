@@ -30,12 +30,12 @@ jobs:
     runs-on: ubuntu-20.04
     
     steps:
-      # We want to use GitHub CI checkout version 3 for checking out the branch
-      - uses: ros-tooling/setup-ros@v0.2
+      # We want to use GitHub CI checkout version 2 for checking out the branch
+      - uses: ros-tooling/setup-ros@v0.3
         with:
           required-ros-distributions: noetic
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: Artemis
-          target-ros2-distro: noetic
+          target-ros-distro: noetic
           skip-tests: true
