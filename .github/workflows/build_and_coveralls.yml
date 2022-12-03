@@ -37,5 +37,5 @@ jobs:
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: Artemis
-          target-ros-distro: noetic
+          target-ros1-distro: noetic
           skip-tests: true
