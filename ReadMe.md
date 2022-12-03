@@ -1,6 +1,10 @@
 
 # Artemis
 
+[![Build Status](https://github.com/tanujthakkar/Artemis/actions/workflows/build_and_coveralls.yml/badge.svg)](https://github.com/tanujthakkar/Artemis/actions/workflows/build_and_coveralls.yml)
+[![Coverage Status](https://coveralls.io/repos/github/tanujthakkar/Artemis/badge.svg?branch=master)](https://coveralls.io/github/tanujthakkar/Artemis?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 Artemis is a warehouse inventory management robot, the package for which is written in C++. The package is responsible for navigation in a warehouse environment, identifying the cargo, pick and place of the cargo. The location of the cargo is not known to the robot ahead of time but is estimated using ArUco tags. The cargo locations are randomized for each run.
 
 ## Project Members
