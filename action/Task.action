@@ -1,0 +1,13 @@
+# goal
+string ID
+geometry_msgs/PoseArray staging_goals
+int8 process_status
+---
+# result
+string ID
+bool SUCCESS
+---
+# feedback
+int8 process_status
+bool SUCCESS
+int8 error
