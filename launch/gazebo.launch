@@ -1,0 +1,32 @@
+<launch>
+
+    <!-- Gazebo Arguments -->
+    <arg name="debug" default="false"/>
+    <arg name="gui" default="true"/>
+    <arg name="pause" default="false"/>
+    <arg name="world" value="$(find Artemis)/worlds/small_warehouse.world"/>
+
+    <!-- Husky Arguments -->
+    <arg name="x"  default="-1.25" />
+    <arg name="y"  default="-4.0" />
+    <arg name="z"  default="0.256" />
+    <arg name="yaw"  default="0" />
+
+    <!-- Gazebo Node -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" default="$(arg world)"/>
+        <arg name="debug" value="$(arg debug)"/>
+        <arg name="gui" value="$(arg gui)"/>
+        <arg name="paused" value="$(arg pause)"/>
+        <arg name="use_sim_time" value="true"/>
+    </include>
+
+    <!-- Spawn Husky Node -->
+    <include file="$(find husky_gazebo)/launch/spawn_husky.launch">
+        <arg name="x" default="$(arg x)"/>
+        <arg name="y" default="$(arg y)"/>
+        <arg name="z" default="$(arg z)"/>
+        <arg name="yaw" default="$(arg yaw)"/>
+    </include>
+
+</launch>
