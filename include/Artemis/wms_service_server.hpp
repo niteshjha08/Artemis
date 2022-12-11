@@ -2,7 +2,7 @@
  * MIT License
 
   Copyright (c) 2022 Nitesh Jha, Tanuj Thakkar
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
   in the Software without restriction, including without limitation the rights
@@ -27,50 +27,48 @@
  * @file wms_service_server.hpp
  * @author Nitesh Jha (Navigator), Tanuj Thakkar (Driver)
  * @brief This file contains the class declaration for the WMS service server
- * 
+ *
  */
-
 
 #pragma once
 
+#include <Artemis/WMSTask.h>
 #include <ros/ros.h>
-
-#include <artemis_msgs/WMSTask.h>
 
 namespace Artemis {
 
 /**
  * @brief This class is used to define the WMS service server
- * 
+ *
  */
 class WMSServiceServer {
-    private:
-        ros::ServiceServer wms_service_server_;  // WMS service server
+ private:
+  ros::ServiceServer wms_service_server_;  // WMS service server
 
-        /**
-         * @brief This function is used to define the callback function for the WMS service server
-         * 
-         * @param req 
-         * @param res 
-         * @return true 
-         * @return false 
-         */
-        bool assignTask(artemis_msgs::WMSTask::Request &req,
-                                artemis_msgs::WMSTask::Response &res);  
+  /**
+   * @brief This function is used to define the callback function for the WMS
+   * service server
+   *
+   * @param req
+   * @param res
+   * @return true
+   * @return false
+   */
+  bool assignTask(const Artemis::WMSTask::Request::ConstPtr req,
+                  const Artemis::WMSTask::Response::ConstPtr res);
 
-    public:
-        /**
-        * @brief Construct a new WMS Service Server object
-        * 
-        */
-        WMSServiceServer();
-    
-        /**
-        * @brief Destroy the WMS Service Server object
-        * 
-        */
-        ~WMSServiceServer();
+ public:
+  /**
+   * @brief Construct a new WMS Service Server object
+   *
+   */
+  explicit WMSServiceServer(const ros::NodeHandle& node_handle);
+
+  /**
+   * @brief Destroy the WMS Service Server object
+   *
+   */
+  ~WMSServiceServer();
 };
 
-
-} // namespace Artemis
+}  // namespace Artemis

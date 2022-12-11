@@ -2,7 +2,7 @@
  * MIT License
 
   Copyright (c) 2022 Nitesh Jha, Tanuj Thakkar
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a copy
   of this software and associated documentation files (the "Software"), to deal
   in the Software without restriction, including without limitation the rights
@@ -27,43 +27,44 @@
  * @file wms_service_server.cpp
  * @author Nitesh Jha (Navigator), Tanuj Thakkar (Driver)
  * @brief This file contains the class definition for the WMS service server
- * 
+ *
  */
-
 
 #pragma once
 
 #include <ros/ros.h>
 
-#include <Artemis/wms_service_server.hpp>
-#include <artemis_msgs/WMSTask.h>
+#include <wms_service_server.hpp>
 
 namespace Artemis {
 
 /**
- * @brief This function is used to define the callback function for the WMS service server
- * 
- * @param req 
- * @param res 
- * @return true 
- * @return false 
+ * @brief This function is used to define the callback function for the WMS
+ * service server
+ *
+ * @param req
+ * @param res
+ * @return true
+ * @return false
  */
-bool WMSServiceServer::assignTask(const artemis_msgs::WMSTask::Request& req,
-                                          artemis_msgs::WMSTask::Response& res) {
-    return true;
+bool WMSServiceServer::assignTask(
+    const Artemis::WMSTask::Request::ConstPtr req,
+    const Artemis::WMSTask::Response::ConstPtr res) {
+  return true;
 }
 
 /**
- * @brief This function is used to define the constructor for the WMS service server
- * 
- * @param node_handle 
+ * @brief This function is used to define the constructor for the WMS service
+ * server
+ *
+ * @param node_handle
  */
-WMSServiceServer::WMSServiceServer(const ros::NodeHandle& node_handle) {
-}
+WMSServiceServer::WMSServiceServer(const ros::NodeHandle& node_handle) {}
 
 /**
- * @brief This function is used to define the destructor for the WMS service server
- * 
+ * @brief This function is used to define the destructor for the WMS service
+ * server
+ *
  */
 WMSServiceServer::~WMSServiceServer() {}
 
