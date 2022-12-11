@@ -32,8 +32,9 @@
 
 #pragma once
 
-#include <artemis_msgs/WMSTask.h>
 #include <ros/ros.h>
+
+#include <Artemis/WMSTask.h>
 
 namespace artemis {
 
@@ -65,7 +66,7 @@ class WMSServiceClient {
    * @return false If the task was not successfully received from the WMS
    * service server
    */
-  bool receiveTask(const artemis_msgs::WMSTask& task);
+  bool recieveTask(const Artemis::WMSTask& task);
 
  private:
   ros::ServiceClient wms_service_client_;  // WMS service client
