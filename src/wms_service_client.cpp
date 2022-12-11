@@ -30,7 +30,7 @@
  *
  */
 
-#include <Artemis/wms_service_client.hpp>
+#include <wms_service_client.hpp>
 
 namespace artemis {
 
@@ -53,7 +53,7 @@ WMSServiceClient::~WMSServiceClient() {}
  * @return true Received task successfully
  * @return false Failed to receive task
  */
-bool WMSServiceClient::recieveTask(const artemis_msgs::WMSTask& task) {
+bool WMSServiceClient::recieveTask(const Artemis::WMSTask& task) {
   return true;
 }
 
