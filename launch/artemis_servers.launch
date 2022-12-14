@@ -1,0 +1,9 @@
+<launch>
+
+    <!-- WMS Server Node -->
+    <node pkg="Artemis" type="wms_server_node" name="wms_server_node" output="screen"/>
+
+    <!-- Task Server Node -->
+    <node pkg="Artemis" type="task_server_node" name="task_server_node" output="screen"/>
+
+</launch>
