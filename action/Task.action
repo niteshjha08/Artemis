@@ -1,10 +1,9 @@
 # goal
-string ID
+int8 ID
 geometry_msgs/PoseArray staging_goals
-int8 process_status
 ---
 # result
-string ID
+int8 ID
 bool SUCCESS
 ---
 # feedback

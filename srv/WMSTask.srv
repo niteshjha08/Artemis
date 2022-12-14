@@ -1,4 +1,4 @@
 
 ---
-string ID
+int8 ID
 geometry_msgs/PoseArray staging_goals
