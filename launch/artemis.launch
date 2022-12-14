@@ -1,6 +1,0 @@
-<launch>
-
-    <!-- Artemis Node -->
-    <node pkg="Artemis" type="artemis" name="artemis" output="screen"/>
-
-</launch>
