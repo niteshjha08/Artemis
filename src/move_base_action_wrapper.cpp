@@ -36,13 +36,36 @@ namespace Artemis {
 
 MoveBaseActionWrapper::MoveBaseActionWrapper(const std::string& action_name,
                                              const bool& spin_thread)
-    : move_base_client_(action_name, spin_thread) {}
+    : move_base_client_(std::make_shared<MoveBaseClient>(action_name, spin_thread)) {
+  while (!move_base_client_->waitForServer(ros::Duration(5.0))) {
+    ROS_INFO_STREAM("Waiting for the move_base action server to come up");
+  }
+  ROS_INFO_STREAM("Connected to move_base action server");
+}
 
-MoveBaseActionWrapper::~MoveBaseActionWrapper() {}
+MoveBaseActionWrapper::~MoveBaseActionWrapper() {
+  ROS_INFO_STREAM("Shutting down the move_base action client");
+}
 
-bool MoveBaseActionWrapper::sengGoal(const std::string& frame_id,
+bool MoveBaseActionWrapper::sendGoal(const std::string& frame_id,
                                      const geometry_msgs::PoseStamped& goal) {
-  return true;
+
+  move_base_msgs::MoveBaseGoal move_base_goal;  // Create a goal
+  move_base_goal.target_pose.header.frame_id = frame_id;
+  move_base_goal.target_pose.header.stamp = ros::Time::now();
+  move_base_goal.target_pose.pose = goal.pose;
+
+  move_base_client_->sendGoal(move_base_goal);  // Send the goal
+
+  move_base_client_->waitForResult();  // Wait for the result
+
+  if (move_base_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
+    ROS_INFO_STREAM("REACHED THE GOAL!");
+    return true;
+  } else {
+    ROS_INFO_STREAM("The base failed to move to the goal for some reason");
+    return false;
+  }
 }
 
 }  // namespace Artemis
