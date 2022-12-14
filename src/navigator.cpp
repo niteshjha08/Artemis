@@ -41,7 +41,8 @@ Navigator::Navigator(
 Navigator::~Navigator() {}
 
 bool Navigator::navigate(const geometry_msgs::PoseStamped& goal) {
-  return true;
+  bool status = move_base_client_->sendGoal("map", goal);
+  return status;
 }
 
 }  // namespace Artemis
