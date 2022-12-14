@@ -63,10 +63,13 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
   ROS_INFO_STREAM("TaskActionServer ("
                   << action_name_ << "): Task request received. Executing...");
 
+  ArucoDetector aruco_detector(node_handle_, task_goal->ID, "fiducial_transforms");
+  geometry_msgs::PoseStamped task_pose;
   bool detected = false;
   int count = 0;
 
-  while (task_action_server_.isActive() && ros::ok()) {
+  // Search and detect the cargo
+  while (task_action_server_.isActive() && ros::ok() && !detected) {
     // Check if the task action server has been preempted
     if (task_action_server_.isPreemptRequested() || !ros::ok()) {
       ROS_INFO_STREAM("TaskActionServer ("
@@ -97,7 +100,18 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
         ROS_INFO_STREAM("TaskActionServer (" << action_name_
                                              << "): Reached staging goal");
         task_feedback_.process_status = "DETECTING";
-        ros::Duration(5.0).sleep();  // Sleep for 5 seconds
+
+        ros::Time detection_start_time = ros::Time::now();
+        while (ros::Time::now() - detection_start_time < ros::Duration(5)) {
+          if (aruco_detector.isDetected()) {
+            ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                                 << "): CARGO DETECTED");
+            detected = true;
+            task_pose = aruco_detector.getTaskPose();
+            break;
+          }
+        }
+
       } else {
         ROS_ERROR_STREAM("TaskActionServer ("
                          << action_name_
