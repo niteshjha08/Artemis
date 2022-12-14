@@ -40,7 +40,7 @@ ArucoDetector::ArucoDetector(const ros::NodeHandle& node_handle, const std::stri
 
 ArucoDetector::~ArucoDetector() {}
 
-void ArucoDetector::arucoCallback(const fiducial_msgs::FiducialTransformArray::ConstPtr& msg) {
+void ArucoDetector::arucoDetectCallback(const fiducial_msgs::FiducialTransformArray::ConstPtr& msg) {
 }
 
 }  // namespace Artemis

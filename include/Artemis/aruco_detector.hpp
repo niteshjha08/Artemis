@@ -62,6 +62,7 @@ class ArucoDetector {
     void arucoDetectCallback(const fiducial_msgs::FiducialTransformArray::ConstPtr& msg);
 
   private:
+    const ros::NodeHandle node_handle_;  // NodeHandle for the node
     const ros::Subscriber aruco_subscriber_;  // Subscriber for aruco detection
     const std::string task_id_;  // Task ID
     const fiducial_msgs::FiducialTransform task_pose_;  // Pose of the task
