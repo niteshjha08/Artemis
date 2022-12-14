@@ -32,20 +32,34 @@
 
 #include <wms_service_client.hpp>
 
-namespace artemis {
+namespace Artemis {
 
 /**
  * @brief Construct a new WMSServiceClient::WMSServiceClient object
  *
  * @param node_handle Node handle for the ROS node
  */
-WMSServiceClient::WMSServiceClient(const ros::NodeHandle& node_handle) {}
+WMSServiceClient::WMSServiceClient(const ros::NodeHandle& node_handle, const std::string& service_name)
+  : node_handle_(node_handle),
+    wms_service_client_(node_handle_.serviceClient<Artemis::WMSTask>(service_name)) {
+    while (!ros::service::waitForService(service_name, ros::Duration(1.0))) {
+      ROS_INFO_STREAM("Waiting for the WMS service server to start");
+    }
+    ROS_INFO_STREAM("WMS service client created");  
+
+    // Send a task to the WMS service server
+    Artemis::WMSTask task;
+    wms_service_client_.call(task);
+    ROS_INFO_STREAM("Task sent: " << static_cast<int>(task.response.ID));
+  }
 
 /**
  * @brief Destroy the WMSServiceClient::WMSServiceClient object
  *
  */
-WMSServiceClient::~WMSServiceClient() {}
+WMSServiceClient::~WMSServiceClient() {
+  ROS_INFO_STREAM("WMS service client destroyed");
+}
 
 /**
  * @brief This function is used to send a task to the WMS service server
@@ -53,8 +67,17 @@ WMSServiceClient::~WMSServiceClient() {}
  * @return true Received task successfully
  * @return false Failed to receive task
  */
-bool WMSServiceClient::recieveTask(const Artemis::WMSTask& task) {
-  return true;
+bool WMSServiceClient::receiveTask(Artemis::WMSTask& task) {
+
+  if (wms_service_client_.call(task)) {
+    ROS_INFO_STREAM("Received task successfully");
+    std::cout << "Task received: " << static_cast<int>(task.response.ID) << std::endl;
+    return true;
+  } else {
+    ROS_INFO_STREAM("Failed to receive task");
+    std::cout << "Task received: " << static_cast<int>(task.response.ID) << std::endl;
+    return false;
+  }
 }
 
-}  // namespace artemis
+}  // namespace Artemis

@@ -36,7 +36,7 @@
 
 #include <Artemis/WMSTask.h>
 
-namespace artemis {
+namespace Artemis {
 
 /**
  * @brief This class is used to communicate with the WMS service server
@@ -49,7 +49,7 @@ class WMSServiceClient {
    *
    * @param node_handle The ROS node handle
    */
-  WMSServiceClient(const ros::NodeHandle& node_handle);
+  WMSServiceClient(const ros::NodeHandle& node_handle, const std::string& service_name);
 
   /**
    * @brief Destroy the WMSServiceClient object
@@ -66,9 +66,10 @@ class WMSServiceClient {
    * @return false If the task was not successfully received from the WMS
    * service server
    */
-  bool recieveTask(const Artemis::WMSTask& task);
+  bool receiveTask(Artemis::WMSTask& task);
 
  private:
+  ros::NodeHandle node_handle_;  // ROS node handle
   ros::ServiceClient wms_service_client_;  // WMS service client
 };
 
