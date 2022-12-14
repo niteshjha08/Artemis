@@ -24,17 +24,43 @@
 /**
  * @copyright Copyright (c) 2022 Nitesh Jha, Tanuj Thakkar
  *
- * @file main.cpp
+ * @file artemis_node.cpp
  * @author Nitesh Jha (Navigator), Tanuj Thakkar (Driver)
  * @brief This file contains the main function for the artemis package
  *
  */
 
+#include <Artemis/TaskAction.h>
+#include <Artemis/WMSTask.h>
 #include <ros/ros.h>
 
+#include <task_action_client.hpp>
+#include <wms_service_client.hpp>
+
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "artemis");
+  ros::init(argc, argv, "artemis_node");
   ros::NodeHandle nh;
+
+  Artemis::WMSServiceClient wms_service_client(nh, "wms_server");
+  Artemis::TaskActionClient task_action_client("task_server");
+
+  while (ros::ok()) {
+    Artemis::WMSTask wms_task;
+    if (!wms_service_client.receiveTask(wms_task)) {
+      ROS_INFO_STREAM("Artemis: Execution complete!");
+      return 0;
+    }
+
+    Artemis::TaskGoal task_goal;
+    task_goal.ID = wms_task.response.ID;
+    task_goal.staging_goals = wms_task.response.staging_goals;
+    task_goal.goal = wms_task.response.goal;
+
+    task_action_client.requestTaskAction(task_goal);
+    task_action_client.waitForResult();
+
+    ros::Duration(1.0).sleep();
+  }
 
   ros::spin();
 
