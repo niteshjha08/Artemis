@@ -30,42 +30,54 @@
  *
  */
 
-#pragma once
-
-#include <ros/ros.h>
-
 #include <wms_service_server.hpp>
+
 
 namespace Artemis {
 
-/**
- * @brief This function is used to define the callback function for the WMS
- * service server
- *
- * @param req
- * @param res
- * @return true
- * @return false
- */
-bool WMSServiceServer::assignTask(
-    const Artemis::WMSTask::Request::ConstPtr req,
-    const Artemis::WMSTask::Response::ConstPtr res) {
-  return true;
+WMSServiceServer::WMSServiceServer(const ros::NodeHandle& node_handle, const std::string& service_name) 
+  : node_handle_(node_handle),
+    wms_service_server_(node_handle_.advertiseService(service_name, &WMSServiceServer::assignTask, this)) {
+
+  ROS_INFO_STREAM("WMS Service Server is running");
+  std::shuffle(std::begin(task_queue_), std::end(task_queue_), std::default_random_engine(std::random_device()()));
+
+  ROS_INFO_STREAM("Task Queue: " << task_queue_[0] << " " << task_queue_[1] << " " << task_queue_[2] << " " << task_queue_[3]);
 }
 
-/**
- * @brief This function is used to define the constructor for the WMS service
- * server
- *
- * @param node_handle
- */
-WMSServiceServer::WMSServiceServer(const ros::NodeHandle& node_handle) {}
+WMSServiceServer::~WMSServiceServer() {
+  ROS_INFO_STREAM("WMS Service Server is shutting down");
+}
 
-/**
- * @brief This function is used to define the destructor for the WMS service
- * server
- *
- */
-WMSServiceServer::~WMSServiceServer() {}
+bool WMSServiceServer::assignTask(
+    Artemis::WMSTask::Request& req,
+    Artemis::WMSTask::Response& res) {
+      
+    if(task_queue_.empty()) {
+      ROS_INFO_STREAM("No tasks available");
+      return false;
+    } else{
+      res.ID = task_queue_.front();
+      task_queue_.erase(task_queue_.begin());
+
+      res.staging_goals.header.frame_id = "map";
+      res.staging_goals.header.stamp = ros::Time::now();
+      for (const auto& staging_goal : staging_goals_) {
+        geometry_msgs::Pose pose;
+        pose.position.x = staging_goal[0];
+        pose.position.y = staging_goal[1];
+        pose.position.z = staging_goal[2];
+        pose.orientation.x = staging_goal[3];
+        pose.orientation.y = staging_goal[4];
+        pose.orientation.z = staging_goal[5];
+        pose.orientation.w = staging_goal[6];
+        res.staging_goals.poses.push_back(pose);
+      }
+      ROS_INFO_STREAM("Task assigned: " << static_cast<int>(res.ID));
+      return true;
+    }
+
+  return false;
+}
 
 }  // namespace Artemis
