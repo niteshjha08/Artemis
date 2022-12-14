@@ -1,12 +1,13 @@
 # goal
 int8 ID
 geometry_msgs/PoseArray staging_goals
+geometry_msgs/Pose goal
 ---
 # result
 int8 ID
 bool SUCCESS
 ---
 # feedback
-int8 process_status
+string process_status
 bool SUCCESS
 int8 error
