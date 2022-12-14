@@ -32,50 +32,67 @@
 
 #include <wms_service_server.hpp>
 
-
 namespace Artemis {
 
-WMSServiceServer::WMSServiceServer(const ros::NodeHandle& node_handle, const std::string& service_name) 
-  : node_handle_(node_handle),
-    wms_service_server_(node_handle_.advertiseService(service_name, &WMSServiceServer::assignTask, this)) {
+WMSServiceServer::WMSServiceServer(const ros::NodeHandle& node_handle,
+                                   const std::string& service_name)
+    : node_handle_(node_handle),
+      service_name_(service_name),
+      wms_service_server_(node_handle_.advertiseService(
+          service_name_, &WMSServiceServer::assignTask, this)) {
+  ROS_INFO_STREAM("WMSServiceServer (" << service_name_
+                                       << "): WMS Service Server is running");
+  std::shuffle(std::begin(task_queue_), std::end(task_queue_),
+               std::default_random_engine(std::random_device()()));
 
-  ROS_INFO_STREAM("WMS Service Server is running");
-  std::shuffle(std::begin(task_queue_), std::end(task_queue_), std::default_random_engine(std::random_device()()));
-
-  ROS_INFO_STREAM("Task Queue: " << task_queue_[0] << " " << task_queue_[1] << " " << task_queue_[2] << " " << task_queue_[3]);
+  ROS_INFO_STREAM("WMSServiceServer ("
+                  << service_name_ << "): Task Queue: " << task_queue_[0] << " "
+                  << task_queue_[1] << " " << task_queue_[2] << " "
+                  << task_queue_[3]);
 }
 
 WMSServiceServer::~WMSServiceServer() {
-  ROS_INFO_STREAM("WMS Service Server is shutting down");
+  ROS_INFO_STREAM("WMSServiceServer ("
+                  << service_name_ << "): WMS Service Server is shutting down");
 }
 
-bool WMSServiceServer::assignTask(
-    Artemis::WMSTask::Request& req,
-    Artemis::WMSTask::Response& res) {
-      
-    if(task_queue_.empty()) {
-      ROS_INFO_STREAM("No tasks available");
-      return false;
-    } else{
-      res.ID = task_queue_.front();
-      task_queue_.erase(task_queue_.begin());
+bool WMSServiceServer::assignTask(Artemis::WMSTask::Request& req,
+                                  Artemis::WMSTask::Response& res) {
+  if (task_queue_.empty()) {
+    ROS_INFO_STREAM("WMSServiceServer (" << service_name_
+                                         << "): No tasks available");
+    return false;
+  } else {
+    res.ID = task_queue_.front();
 
-      res.staging_goals.header.frame_id = "map";
-      res.staging_goals.header.stamp = ros::Time::now();
-      for (const auto& staging_goal : staging_goals_) {
-        geometry_msgs::Pose pose;
-        pose.position.x = staging_goal[0];
-        pose.position.y = staging_goal[1];
-        pose.position.z = staging_goal[2];
-        pose.orientation.x = staging_goal[3];
-        pose.orientation.y = staging_goal[4];
-        pose.orientation.z = staging_goal[5];
-        pose.orientation.w = staging_goal[6];
-        res.staging_goals.poses.push_back(pose);
-      }
-      ROS_INFO_STREAM("Task assigned: " << static_cast<int>(res.ID));
-      return true;
+    res.staging_goals.header.frame_id = "map";
+    res.staging_goals.header.stamp = ros::Time::now();
+    for (const auto& staging_goal : staging_goals_) {
+      geometry_msgs::Pose pose;
+      pose.position.x = staging_goal[0];
+      pose.position.y = staging_goal[1];
+      pose.position.z = staging_goal[2];
+      pose.orientation.x = staging_goal[3];
+      pose.orientation.y = staging_goal[4];
+      pose.orientation.z = staging_goal[5];
+      pose.orientation.w = staging_goal[6];
+      res.staging_goals.poses.push_back(pose);
     }
+
+    res.goal.position.x = goals_.at(task_queue_.front())[0];
+    res.goal.position.y = goals_.at(task_queue_.front())[1];
+    res.goal.position.z = goals_.at(task_queue_.front())[2];
+    res.goal.orientation.x = goals_.at(task_queue_.front())[3];
+    res.goal.orientation.y = goals_.at(task_queue_.front())[4];
+    res.goal.orientation.z = goals_.at(task_queue_.front())[5];
+    res.goal.orientation.w = goals_.at(task_queue_.front())[6];
+
+    task_queue_.erase(task_queue_.begin());
+    ROS_INFO_STREAM("WMSServiceServer ("
+                    << service_name_
+                    << "): Task assigned: " << static_cast<int>(res.ID));
+    return true;
+  }
 
   return false;
 }
