@@ -13,6 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
   move_base
   move_base_msgs
   fiducial_msgs
+  tf
+  tf2
+  tf2_ros
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -53,7 +56,7 @@ set(artemis_src
 add_library(artemis_lib ${artemis_src})
 
 catkin_package(
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs actionlib_msgs message_runtime move_base_msgs move_base fiducial_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs actionlib_msgs message_runtime move_base_msgs move_base fiducial_msgs tf tf2_ros
 )
 
 include_directories(
