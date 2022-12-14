@@ -60,7 +60,17 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(artemis src/main.cpp)
-target_link_libraries(artemis
+add_executable(wms_server_node src/wms_server_node.cpp)
+target_link_libraries(wms_server_node
+  artemis_lib
+  ${catkin_LIBRARIES})
+
+add_executable(task_server_node src/task_server_node.cpp)
+target_link_libraries(task_server_node
+  artemis_lib
+  ${catkin_LIBRARIES})
+
+add_executable(artemis_node src/artemis_node.cpp)
+target_link_libraries(artemis_node
   artemis_lib
   ${catkin_LIBRARIES})
