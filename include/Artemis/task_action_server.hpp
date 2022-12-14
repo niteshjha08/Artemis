@@ -42,7 +42,6 @@
 #include <aruco_detector.hpp>
 #include <move_base_action_wrapper.hpp>
 #include <navigator.hpp>
-#include <wms_service_client.hpp>
 
 
 namespace Artemis {
@@ -80,7 +79,6 @@ class TaskActionServer {
   void executeTask(const Artemis::TaskGoalConstPtr& task_goal);
 
  private:
-  // WMSServiceClient wms_service_client_;  // WMSServiceClient object
   std::shared_ptr<MoveBaseActionWrapper>
       move_base_wrapper_;  // MoveBaseWrapper object
   Navigator navigator_;    // Navigator object
