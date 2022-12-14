@@ -29,4 +29,13 @@
         <arg name="yaw" default="$(arg yaw)"/>
     </include>
 
+    <!-- Fake Localization -->
+    <node pkg="fake_localization" type="fake_localization" name="fake_localization" />
+    
+    <!-- Map Server -->
+    <node pkg="map_server" name="map_server" type="map_server" args="$(find Artemis)/maps/small_warehouse.yaml"/>
+
+    <!-- Rviz Node -->
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find Artemis)/rviz/artemis.rviz"/>
+
 </launch>
