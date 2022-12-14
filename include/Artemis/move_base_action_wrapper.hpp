@@ -32,13 +32,15 @@
 
 #pragma once
 
+#include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
-#include <ros/ros.h>
 
 #include <string>
 
 namespace Artemis {
+
+typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 class MoveBaseActionWrapper {
  public:
@@ -57,12 +59,19 @@ class MoveBaseActionWrapper {
    */
   ~MoveBaseActionWrapper();
 
-  bool sengGoal(const std::string& frame_id,
+  /**
+   * @brief Send a goal to the move base action server
+   *
+   * @param frame_id The frame id of the goal
+   * @param goal The goal to be sent
+   * @return true If the goal was sent successfully
+   * @return false If the goal was not sent successfully
+   */
+  bool sendGoal(const std::string& frame_id,
                 const geometry_msgs::PoseStamped& goal);
 
  private:
-  actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>
-      move_base_client_;
+  std::shared_ptr<MoveBaseClient> move_base_client_;
 };
 
 }  // namespace Artemis
