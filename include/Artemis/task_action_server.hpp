@@ -36,7 +36,14 @@
 #include <actionlib/server/simple_action_server.h>
 #include <ros/ros.h>
 
+#include <memory>
 #include <string>
+
+#include <aruco_detector.hpp>
+#include <move_base_action_wrapper.hpp>
+#include <navigator.hpp>
+#include <wms_service_client.hpp>
+
 
 namespace Artemis {
 
@@ -46,10 +53,13 @@ namespace Artemis {
  */
 class TaskActionServer {
  protected:
-  actionlib::SimpleActionServer<Artemis::TaskAction> task_action_server;
+  ros::NodeHandle node_handle_;  // Node handle for the task action server
+  std::string action_name_;      // Action name
+  actionlib::SimpleActionServer<Artemis::TaskAction>
+      task_action_server_;  // Task action server
 
-  Artemis::TaskFeedback task_feedback;
-  Artemis::TaskResult task_result;
+  Artemis::TaskFeedback task_feedback_;  // Task feedback
+  Artemis::TaskResult task_result_;      // Task result
 
  public:
   /**
@@ -65,9 +75,16 @@ class TaskActionServer {
 
   /**
    * @brief This function is used to execute the task action server
-   * @param goal The goal of the task action server
+   * @param task_goal The goal of the task action server
    */
-  void executeTask(const Artemis::TaskGoalConstPtr& goal);
+  void executeTask(const Artemis::TaskGoalConstPtr& task_goal);
+
+ private:
+  // WMSServiceClient wms_service_client_;  // WMSServiceClient object
+  std::shared_ptr<MoveBaseActionWrapper>
+      move_base_wrapper_;  // MoveBaseWrapper object
+  Navigator navigator_;    // Navigator object
+  // ArucoDetector aruco_detector_;  // ArucoDetector object
 };
 
 }  // namespace Artemis
