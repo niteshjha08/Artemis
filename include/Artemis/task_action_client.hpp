@@ -36,6 +36,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <ros/ros.h>
 
+#include <memory>
 #include <string>
 
 namespace Artemis {
@@ -58,10 +59,10 @@ class TaskActionClient {
 
   /**
    * @brief This function is used to send a goal to the task action server
-   * @param goal The goal to be sent to the task action server
+   * @param task_goal The goal to be sent to the task action server
    * @return True if the goal was sent successfully, false otherwise
    */
-  bool requestTaskAction(const Artemis::TaskGoal& goal);
+  bool requestTaskAction(const Artemis::TaskGoal& task_goal);
 
   /**
    * @brief This function is used to wait for the result of the task action
@@ -76,7 +77,9 @@ class TaskActionClient {
   actionlib::SimpleClientGoalState getState();
 
  private:
-  actionlib::SimpleActionClient<Artemis::TaskAction> task_action_client_;
+  std::string action_name_;  // The name of the action server
+  std::shared_ptr<actionlib::SimpleActionClient<Artemis::TaskAction>>
+      task_action_client_;  // The action client
 };
 
 }  // namespace Artemis

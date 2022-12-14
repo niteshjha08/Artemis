@@ -35,18 +35,33 @@
 namespace Artemis {
 
 TaskActionClient::TaskActionClient(const std::string& action_name)
-    : task_action_client_(action_name, true) {}
-
-TaskActionClient::~TaskActionClient() {}
-
-bool TaskActionClient::requestTaskAction(const Artemis::TaskGoal& goal) {
-  return true;
+    : action_name_(action_name),
+      task_action_client_(
+          std::make_shared<actionlib::SimpleActionClient<Artemis::TaskAction>>(
+              action_name_, true)) {
+  while (!task_action_client_->waitForServer(ros::Duration(5.0))) {
+    ROS_INFO_STREAM("TaskActionClient ("
+                    << action_name_
+                    << "): Waiting for the task action server...");
+  }
+  ROS_INFO_STREAM("TaskActionClient (" << action_name_
+                                       << "): Task action server connected!");
 }
 
-void TaskActionClient::waitForResult() {}
+TaskActionClient::~TaskActionClient() {
+  ROS_INFO_STREAM("TaskActionClient (" << action_name_ << "): Shutting down!");
+}
+
+bool TaskActionClient::requestTaskAction(const Artemis::TaskGoal& task_goal) {
+  ROS_INFO_STREAM("TaskActionClient (" << action_name_
+                                       << "): Sending task request...");
+  task_action_client_->sendGoal(task_goal);
+}
+
+void TaskActionClient::waitForResult() { task_action_client_->waitForResult(); }
 
 actionlib::SimpleClientGoalState TaskActionClient::getState() {
-  return actionlib::SimpleClientGoalState::SUCCEEDED;
+  return task_action_client_->getState();
 }
 
 }  // namespace Artemis
