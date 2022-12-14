@@ -32,15 +32,17 @@
 
 #pragma once
 
-#include <ros/ros.h>
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
+#include <ros/ros.h>
 
+#include <memory>
 #include <string>
 
 namespace Artemis {
 
-typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
+typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>
+    MoveBaseClient;
 
 class MoveBaseActionWrapper {
  public:
@@ -71,6 +73,7 @@ class MoveBaseActionWrapper {
                 const geometry_msgs::PoseStamped& goal);
 
  private:
+  std::string action_name_;
   std::shared_ptr<MoveBaseClient> move_base_client_;
 };
 

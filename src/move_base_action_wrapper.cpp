@@ -36,20 +36,26 @@ namespace Artemis {
 
 MoveBaseActionWrapper::MoveBaseActionWrapper(const std::string& action_name,
                                              const bool& spin_thread)
-    : move_base_client_(std::make_shared<MoveBaseClient>(action_name, spin_thread)) {
+    : action_name_(action_name),
+      move_base_client_(
+          std::make_shared<MoveBaseClient>(action_name, spin_thread)) {
   while (!move_base_client_->waitForServer(ros::Duration(5.0))) {
-    ROS_INFO_STREAM("Waiting for the move_base action server to come up");
+    ROS_INFO_STREAM("MoveBaseActionWrapper ("
+                    << action_name_
+                    << "): Waiting for the move_base action server to come up");
   }
-  ROS_INFO_STREAM("Connected to move_base action server");
+  ROS_INFO_STREAM("MoveBaseActionWrapper ("
+                  << action_name_ << "): Connected to move_base action server");
 }
 
 MoveBaseActionWrapper::~MoveBaseActionWrapper() {
-  ROS_INFO_STREAM("Shutting down the move_base action client");
+  ROS_INFO_STREAM("MoveBaseActionWrapper ("
+                  << action_name_
+                  << "): Shutting down the move_base action client");
 }
 
 bool MoveBaseActionWrapper::sendGoal(const std::string& frame_id,
                                      const geometry_msgs::PoseStamped& goal) {
-
   move_base_msgs::MoveBaseGoal move_base_goal;  // Create a goal
   move_base_goal.target_pose.header.frame_id = frame_id;
   move_base_goal.target_pose.header.stamp = ros::Time::now();
@@ -59,11 +65,16 @@ bool MoveBaseActionWrapper::sendGoal(const std::string& frame_id,
 
   move_base_client_->waitForResult();  // Wait for the result
 
-  if (move_base_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED) {
-    ROS_INFO_STREAM("REACHED THE GOAL!");
+  if (move_base_client_->getState() ==
+      actionlib::SimpleClientGoalState::SUCCEEDED) {
+    ROS_INFO_STREAM("MoveBaseActionWrapper (" << action_name_
+                                              << "): REACHED THE GOAL!");
     return true;
   } else {
-    ROS_INFO_STREAM("The base failed to move to the goal for some reason");
+    ROS_INFO_STREAM(
+        "MoveBaseActionWrapper ("
+        << action_name_
+        << "): The base failed to move to the goal for some reason");
     return false;
   }
 }
