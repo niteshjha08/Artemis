@@ -39,26 +39,28 @@ namespace Artemis {
  *
  * @param node_handle Node handle for the ROS node
  */
-WMSServiceClient::WMSServiceClient(const ros::NodeHandle& node_handle, const std::string& service_name)
-  : node_handle_(node_handle),
-    wms_service_client_(node_handle_.serviceClient<Artemis::WMSTask>(service_name)) {
-    while (!ros::service::waitForService(service_name, ros::Duration(1.0))) {
-      ROS_INFO_STREAM("Waiting for the WMS service server to start");
-    }
-    ROS_INFO_STREAM("WMS service client created");  
-
-    // Send a task to the WMS service server
-    Artemis::WMSTask task;
-    wms_service_client_.call(task);
-    ROS_INFO_STREAM("Task sent: " << static_cast<int>(task.response.ID));
+WMSServiceClient::WMSServiceClient(const ros::NodeHandle& node_handle,
+                                   const std::string& service_name)
+    : node_handle_(node_handle),
+      service_name_(service_name),
+      wms_service_client_(
+          node_handle_.serviceClient<Artemis::WMSTask>(service_name_)) {
+  while (!ros::service::waitForService(service_name, ros::Duration(1.0))) {
+    ROS_INFO_STREAM("WMSServiceClient ("
+                    << service_name_
+                    << "): Waiting for the WMS service server to start");
   }
+  ROS_INFO_STREAM("WMSServiceClient (" << service_name_
+                                       << "): WMS service client created");
+}
 
 /**
  * @brief Destroy the WMSServiceClient::WMSServiceClient object
  *
  */
 WMSServiceClient::~WMSServiceClient() {
-  ROS_INFO_STREAM("WMS service client destroyed");
+  ROS_INFO_STREAM("WMSServiceClient (" << service_name_
+                                       << "): WMS service client destroyed");
 }
 
 /**
@@ -68,14 +70,13 @@ WMSServiceClient::~WMSServiceClient() {
  * @return false Failed to receive task
  */
 bool WMSServiceClient::receiveTask(Artemis::WMSTask& task) {
-
   if (wms_service_client_.call(task)) {
-    ROS_INFO_STREAM("Received task successfully");
-    std::cout << "Task received: " << static_cast<int>(task.response.ID) << std::endl;
+    ROS_INFO_STREAM("WMSServiceClient (" << service_name_
+                                         << "): Received task successfully");
     return true;
   } else {
-    ROS_INFO_STREAM("Failed to receive task");
-    std::cout << "Task received: " << static_cast<int>(task.response.ID) << std::endl;
+    ROS_INFO_STREAM("WMSServiceClient (" << service_name_
+                                         << "): Failed to receive task");
     return false;
   }
 }

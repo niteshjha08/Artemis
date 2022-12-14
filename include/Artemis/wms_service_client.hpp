@@ -33,8 +33,9 @@
 #pragma once
 
 #include <ros/ros.h>
-
 #include <Artemis/WMSTask.h>
+
+#include <string>
 
 namespace Artemis {
 
@@ -49,7 +50,8 @@ class WMSServiceClient {
    *
    * @param node_handle The ROS node handle
    */
-  WMSServiceClient(const ros::NodeHandle& node_handle, const std::string& service_name);
+  WMSServiceClient(const ros::NodeHandle& node_handle,
+                   const std::string& service_name);
 
   /**
    * @brief Destroy the WMSServiceClient object
@@ -69,8 +71,9 @@ class WMSServiceClient {
   bool receiveTask(Artemis::WMSTask& task);
 
  private:
-  ros::NodeHandle node_handle_;  // ROS node handle
+  ros::NodeHandle node_handle_;            // ROS node handle
+  const std::string service_name_;         // WMS service name
   ros::ServiceClient wms_service_client_;  // WMS service client
 };
 
-}  // namespace artemis
+}  // namespace Artemis
