@@ -9,8 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
   genmsg
   message_generation
   actionlib_msgs
+  actionlib
   move_base
   move_base_msgs
+  fiducial_msgs
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
@@ -32,6 +34,7 @@ generate_messages(
   geometry_msgs
   actionlib_msgs
   move_base_msgs
+  fiducial_msgs
 )
 
 include_directories(
@@ -44,12 +47,13 @@ set(artemis_src
   src/task_action_server.cpp
   src/task_action_client.cpp
   src/move_base_action_wrapper.cpp
-  src/navigator.cpp)
+  src/navigator.cpp
+  src/aruco_detector.cpp)
 
 add_library(artemis_lib ${artemis_src})
 
 catkin_package(
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs actionlib_msgs message_runtime move_base_msgs move_base
+  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs actionlib_msgs message_runtime move_base_msgs move_base fiducial_msgs
 )
 
 include_directories(
@@ -57,6 +61,6 @@ include_directories(
 )
 
 add_executable(artemis src/main.cpp)
-target_link_libraries(artemis 
-  artemis_lib 
+target_link_libraries(artemis
+  artemis_lib
   ${catkin_LIBRARIES})
