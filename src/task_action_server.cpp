@@ -34,23 +34,81 @@
 
 namespace Artemis {
 
-/**
- * @brief Constructor for the TaskActionServer class
- */
 TaskActionServer::TaskActionServer(const ros::NodeHandle& node_handle,
                                    const std::string& action_name)
-    : task_action_server(node_handle, "task_action",
-                         boost::bind(&TaskActionServer::executeTask, this, _1),
-                         false) {}
+    : node_handle_(node_handle),
+      action_name_(action_name),
+      move_base_wrapper_(
+          std::make_shared<MoveBaseActionWrapper>("move_base", true)),
+      navigator_(move_base_wrapper_),
+      task_action_server_(node_handle_, action_name,
+                          boost::bind(&TaskActionServer::executeTask, this, _1),
+                          false) {
+  ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                       << "): Starting task action server...");
+  task_action_server_.start();
+  ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                       << "): Task action server started");
+}
 
-/**
- * @brief Destructor for the TaskActionServer class
- */
-TaskActionServer::~TaskActionServer() {}
+TaskActionServer::~TaskActionServer() {
+  ROS_INFO_STREAM("TaskActionServer ("
+                  << action_name_ << "): Shutting down task action server...");
+  task_action_server_.shutdown();
+  ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                       << "): Task action server shut down");
+}
 
-/**
- * @brief This function is used to execute the task action server
- */
-void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& goal) {}
+void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
+  ROS_INFO_STREAM("TaskActionServer ("
+                  << action_name_ << "): Task request received. Executing...");
+
+  bool detected = false;
+  int count = 0;
+
+  while (task_action_server_.isActive() && ros::ok()) {
+    // Check if the task action server has been preempted
+    if (task_action_server_.isPreemptRequested() || !ros::ok()) {
+      ROS_INFO_STREAM("TaskActionServer ("
+                      << action_name_ << "): Task action server preempted");
+      task_action_server_.setPreempted();
+      return;
+    }
+
+    if (!detected) {
+      task_feedback_.process_status = "NAVIGATING";
+
+      if (task_goal->staging_goals.poses.empty()) {
+        ROS_ERROR_STREAM("TaskActionServer (" << action_name_
+                                              << "): CARGO NOT FOUND");
+        task_action_server_.setAborted();
+        return;
+      }
+
+      geometry_msgs::PoseStamped staging_goal;
+      staging_goal.header.frame_id = "map";
+      staging_goal.header.stamp = ros::Time::now();
+      staging_goal.pose = task_goal->staging_goals.poses[count];
+
+      ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                           << "): Navigating to staging goal");
+      if (navigator_.navigate(staging_goal)) {
+        count++;
+        ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                             << "): Reached staging goal");
+        task_feedback_.process_status = "DETECTING";
+        ros::Duration(5.0).sleep();  // Sleep for 5 seconds
+      } else {
+        ROS_ERROR_STREAM("TaskActionServer ("
+                         << action_name_
+                         << "): Failed to navigate to staging goal");
+        task_action_server_.setAborted();
+        return;
+      }
+    }
+
+    ros::Duration(0.1).sleep();  // Sleep for 100 ms
+  }
+}
 
 }  // namespace Artemis
