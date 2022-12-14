@@ -32,10 +32,14 @@
 
 #pragma once
 
-#include <ros/ros.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <fiducial_msgs/FiducialTransform.h>
 #include <fiducial_msgs/FiducialTransformArray.h>
-
+#include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2/LinearMath/Transform.h>
+#include <ros/ros.h>
 
 namespace Artemis {
 
@@ -43,29 +47,52 @@ namespace Artemis {
  * @brief This class is used to detect the aruco markers
  */
 class ArucoDetector {
-  public:
-    /**
-     * @brief Constructor for ArucoDetector class
-     * @param node_handle - NodeHandle for the node
-     */
-    ArucoDetector(const ros::NodeHandle& node_handle, const std::string& task_id);
+ public:
+  /**
+   * @brief Constructor for ArucoDetector class
+   * @param node_handle - NodeHandle for the node
+   * @param task_id - Task ID
+   */
+  ArucoDetector(const ros::NodeHandle& node_handle, const int& task_id, const std::string& detection_topic);
 
-    /**
-     * @brief Destructor for ArucoDetector class
-     */
-    ~ArucoDetector();
+  /**
+   * @brief Destructor for ArucoDetector class
+   */
+  ~ArucoDetector();
 
-    /**
-     * @brief Callback function for aruco detection
-     * @param msg - Message containing the pose of the aruco marker
-     */
-    void arucoDetectCallback(const fiducial_msgs::FiducialTransformArray::ConstPtr& msg);
+  /**
+   * @brief Callback function for aruco detection
+   * @param msg - Message containing the pose of the aruco marker
+   */
+  void arucoDetectCallback(const fiducial_msgs::FiducialTransformArray::ConstPtr& msg);
+  
+  /**
+   * @brief Get the Task Pose object
+   * 
+   * @return geometry_msgs::Pose 
+   */
+  geometry_msgs::PoseStamped getTaskPose();
 
-  private:
-    const ros::NodeHandle node_handle_;  // NodeHandle for the node
-    const ros::Subscriber aruco_subscriber_;  // Subscriber for aruco detection
-    const std::string task_id_;  // Task ID
-    const fiducial_msgs::FiducialTransform task_pose_;  // Pose of the task
+  /**
+   * @brief Set the Task Pose object
+   * 
+   */
+  void setTaskPose();
+
+  /**
+   * @brief Retrun the flag to check if the task is detected
+   * 
+   */
+  bool isDetected();
+
+ private:
+  ros::NodeHandle node_handle_;       // NodeHandle for the node
+  const int task_id_;               // Task ID
+  const std::string detection_topic_;       // Topic for aruco detection
+  ros::Subscriber aruco_subscriber_;  // Subscriber for aruco detection
+  fiducial_msgs::FiducialTransform task_fiducial_pose_;  // Transform of the task
+  geometry_msgs::PoseStamped task_pose_;  // Pose of the task
+  bool detected_ = false;  // Flag to check if the task is detected
 };
 
 }  // namespace Artemis

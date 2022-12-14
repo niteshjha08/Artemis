@@ -32,15 +32,63 @@
 
 #include <aruco_detector.hpp>
 
-
 namespace Artemis {
 
-ArucoDetector::ArucoDetector(const ros::NodeHandle& node_handle, const std::string& task_id)
-    : node_handle_(node_handle), task_id_(task_id) {}
+ArucoDetector::ArucoDetector(const ros::NodeHandle& node_handle,
+                             const int& task_id,
+                             const std::string& detection_topic)
+    : node_handle_(node_handle), task_id_(task_id),
+      detection_topic_(detection_topic) {
+    aruco_subscriber_ = node_handle_.subscribe(
+        detection_topic_, 10, &ArucoDetector::arucoDetectCallback, this);
+    ROS_INFO_STREAM("ArucoDetector (" << detection_topic_ << "): Subscribed to topic: " << detection_topic_);
+}
 
 ArucoDetector::~ArucoDetector() {}
 
-void ArucoDetector::arucoDetectCallback(const fiducial_msgs::FiducialTransformArray::ConstPtr& msg) {
+void ArucoDetector::arucoDetectCallback(
+    const fiducial_msgs::FiducialTransformArray::ConstPtr& msg) {
+    
+    if (!detected_ && !msg->transforms.size() == 0) {
+        for (auto transform : msg->transforms) {
+            if (transform.fiducial_id == task_id_) {
+                detected_ = true;
+                ROS_INFO_STREAM("ArucoDetector (" << detection_topic_ << "): Detected aruco marker with ID: " << task_id_);
+                task_fiducial_pose_ = transform;
+                setTaskPose();
+                break;
+            }
+        }
+    }
+}
+
+geometry_msgs::PoseStamped ArucoDetector::getTaskPose() {
+    return task_pose_;
+}
+
+void ArucoDetector::setTaskPose() {
+    tf2_ros::Buffer tfBuffer;
+    tf2_ros::TransformListener tfListener(tfBuffer);
+
+    geometry_msgs::TransformStamped camera_to_base_link = tfBuffer.lookupTransform(
+        "base_link", "camera_realsense_gazebo", ros::Time(0), ros::Duration(10.0));
+
+    task_pose_.header.frame_id = "base_link";
+    task_pose_.header.stamp = ros::Time::now();
+    task_pose_.pose.position.x = task_fiducial_pose_.transform.translation.x;
+    task_pose_.pose.position.y = task_fiducial_pose_.transform.translation.y;
+    task_pose_.pose.position.z = task_fiducial_pose_.transform.translation.z;
+    task_pose_.pose.orientation.x = task_fiducial_pose_.transform.rotation.x;
+    task_pose_.pose.orientation.y = task_fiducial_pose_.transform.rotation.y;
+    task_pose_.pose.orientation.z = task_fiducial_pose_.transform.rotation.z;
+    task_pose_.pose.orientation.w = task_fiducial_pose_.transform.rotation.w;
+
+    tf2::doTransform(task_pose_, task_pose_, camera_to_base_link);
+    ROS_INFO_STREAM("ArucoDetector (" << detection_topic_ << "): Task pose set in base_link frame");
+}
+
+bool ArucoDetector::isDetected() {
+    return detected_;
 }
 
 }  // namespace Artemis
