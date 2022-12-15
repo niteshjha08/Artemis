@@ -45,16 +45,16 @@ PickAndPlace::PickAndPlace(const ros::NodeHandle& node_handle)
       "/link_attacher_node/attach");
   detach_client_ = node_handle_.serviceClient<gazebo_ros_link_attacher::Attach>(
       "/link_attacher_node/detach");
-
-  while (!attach_client_.waitForExistence(ros::Duration(1.0))) {
-    ROS_INFO("Waiting for the attach service to come up");
-  }
-  ROS_INFO_STREAM("Attach service is up");
 }
 
 PickAndPlace::~PickAndPlace() {}
 
 void PickAndPlace::pickCargo(int task_id) {
+  while (!attach_client_.waitForExistence(ros::Duration(1.0))) {
+    ROS_INFO("Waiting for the attach service to come up");
+  }
+  ROS_INFO_STREAM("Attach service is up");
+
   ROS_ERROR_STREAM("calling attach service");
   double angle = -1.57;
   double increment = -0.1;
@@ -69,7 +69,6 @@ void PickAndPlace::pickCargo(int task_id) {
     rate.sleep();
   }
   pubMsg.data = -0.2;
-  // elbow_pub_.publish(pubMsg);
 
   // Call attach service
   gazebo_ros_link_attacher::Attach attach_req;
@@ -80,12 +79,17 @@ void PickAndPlace::pickCargo(int task_id) {
   if (attach_client_.call(attach_req)) {
     ROS_INFO_STREAM("Picked cargo successfully");
   } else {
-    ROS_ERROR_STREAM("Failed to call attach service");
+    ROS_ERROR_STREAM("Failed to pick cargo.");
   }
 }
 
 void PickAndPlace::placeCargo(int task_id) {
-  ROS_ERROR_STREAM("calling detach service");
+
+  while (!attach_client_.waitForExistence(ros::Duration(1.0))) {
+    ROS_INFO("Waiting for the attach service to come up");
+  }
+
+  ROS_INFO_STREAM("[Detaching link");
 
   // Call detach service
   gazebo_ros_link_attacher::Attach detach_req;
@@ -111,7 +115,5 @@ void PickAndPlace::placeCargo(int task_id) {
     shoulder_pub_.publish(pubMsg);
     rate.sleep();
   }
-  // pubMsg.data = 0;
-  // elbow_pub_.publish(pubMsg);
 }
 }  // namespace Artemis
