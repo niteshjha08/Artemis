@@ -41,6 +41,7 @@ TaskActionServer::TaskActionServer(const ros::NodeHandle& node_handle,
       move_base_wrapper_(
           std::make_shared<MoveBaseActionWrapper>("move_base", true)),
       navigator_(move_base_wrapper_),
+      pick_and_place_(node_handle),
       task_action_server_(node_handle_, action_name,
                           boost::bind(&TaskActionServer::executeTask, this, _1),
                           false) {
@@ -124,6 +125,7 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
   }
 
   //
+  pick_and_place_.pickCargo(task_goal->ID);
 
   // Navigate to the goal
   ROS_INFO_STREAM("TaskActionServer (" << action_name_
@@ -138,6 +140,7 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
     task_feedback_.process_status = "SERVICE";
     task_result_.SUCCESS = true;
     task_action_server_.setSucceeded(task_result_);
+    pick_and_place_.placeCargo(task_goal->ID);
   } else {
     ROS_ERROR_STREAM("TaskActionServer (" << action_name_
                                           << "): Failed to navigate to goal");

@@ -41,6 +41,7 @@
 #include <memory>
 #include <move_base_action_wrapper.hpp>
 #include <navigator.hpp>
+#include <pick_and_place.hpp>
 #include <string>
 
 namespace Artemis {
@@ -82,6 +83,7 @@ class TaskActionServer {
       move_base_wrapper_;  // MoveBaseWrapper object
   Navigator navigator_;    // Navigator object
   // ArucoDetector aruco_detector_;  // ArucoDetector object
+  PickAndPlace pick_and_place_;  // PickAndPlace object
 };
 
 }  // namespace Artemis
