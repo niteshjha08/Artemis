@@ -34,15 +34,14 @@
 
 #include <Artemis/TaskAction.h>
 #include <actionlib/server/simple_action_server.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <ros/ros.h>
 
-#include <memory>
-#include <string>
-
 #include <aruco_detector.hpp>
+#include <memory>
 #include <move_base_action_wrapper.hpp>
 #include <navigator.hpp>
-
+#include <string>
 
 namespace Artemis {
 
