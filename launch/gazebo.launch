@@ -33,22 +33,41 @@
     <node pkg="fake_localization" type="fake_localization" name="fake_localization" />
     
     <!-- Map Server -->
-    <node pkg="map_server" name="map_server" type="map_server" args="$(find Artemis)/maps/small_warehouse.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(find Artemis)/maps/small_warehouse_cargo.yaml"/>
 
     <!-- Move Base -->
     <include file="$(find husky_navigation)/launch/move_base.launch" />
 
     <!-- Spawn Cargo -->
-    <node name="spawn_sdf" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_1/model.sdf -model Box_Aruco_1 -x -0.375 -y 5.558 -z 0.109 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_1" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_1/model.sdf -model Box_Aruco_1 -x -0.375 -y 5.558 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_2" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_2/model.sdf -model Box_Aruco_2 -x -1.069 -y 5.035 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_3" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_3/model.sdf -model Box_Aruco_3 -x -1.105 -y 5.964 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_4" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_4/model.sdf -model Box_Aruco_4 -x -1.4703 -y 5.606 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <!-- <node name="spawn_sdf" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_1/model.sdf -model Box_Aruco_1 -x 0.444 -y -3.986 -z 0.109 -R 0 -P 0 -Y 0"  /> -->
 
     <!-- Aruco Detect -->
-    <include file="$(find aruco_detect)/launch/aruco_detect.launch">
+    <!-- <include file="$(find aruco_detect)/launch/aruco_detect.launch">
         <arg name="camera" value="/realsense/color" />
         <arg name="image" value="image_raw" />
         <arg name="transport" value="compressed" />
-        <arg name="dictionary" value="3" />
-        <arg name="fiducial_len" value="0.15" />
-    </include>
+        <arg name="dictionary" value="16" />
+        <arg name="fiducial_len" value="0.25" />
+    </include> -->
+
+    <arg name="markerSize"      default="0.25"/>
+    <arg name="ref_frame"       default="map"/>
+    <arg name="cam_frame"       default="camera_realsense_gazebo"/>
+
+    <node pkg="aruco_ros" type="marker_publisher" name="aruco_marker_publisher">
+        <remap from="/camera_info" to="/realsense/color/camera_info" />
+        <remap from="/image" to="/realsense/color/image_raw" />
+        <!-- <remap from="/camera_info" to="/husky/camera/camera_info" />
+        <remap from="/image" to="/husky/camera/image_raw" /> -->
+        <param name="image_is_rectified" value="True"/>
+        <param name="marker_size"        value="$(arg markerSize)"/>
+        <param name="reference_frame"    value="$(arg ref_frame)"/>
+        <param name="camera_frame"       value="$(arg cam_frame)"/>
+    </node>
 
     <!-- Rviz Node -->
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find Artemis)/rviz/artemis.rviz"/>
