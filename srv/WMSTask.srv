@@ -1,5 +1,5 @@
 
 ---
-int8 ID
+int16 ID
 geometry_msgs/PoseArray staging_goals
 geometry_msgs/Pose goal
