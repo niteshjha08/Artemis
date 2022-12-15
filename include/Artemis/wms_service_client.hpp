@@ -32,8 +32,8 @@
 
 #pragma once
 
-#include <ros/ros.h>
 #include <Artemis/WMSTask.h>
+#include <ros/ros.h>
 
 #include <string>
 
