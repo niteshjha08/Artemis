@@ -5,7 +5,7 @@
       <pose>0 0 0 0 -0 0</pose>
       <link name='link'>
         <inertial>
-          <mass>1</mass>
+          <mass>0.25</mass>
           <inertia>
             <ixx>0.166667</ixx>
             <ixy>0</ixy>
@@ -19,7 +19,7 @@
         <collision name='collision'>
           <geometry>
             <box>
-              <size>0.15 0.15 0.15</size>
+              <size>0.25 0.25 0.25</size>
             </box>
           </geometry>
           <surface>
@@ -39,7 +39,7 @@
         <visual name='aruco_box_mesh'>
           <geometry>
             <box>
-              <size>0.15 0.15 0.15</size>
+              <size>0.25 0.25 0.25</size>
             </box>
           </geometry>
           <material>

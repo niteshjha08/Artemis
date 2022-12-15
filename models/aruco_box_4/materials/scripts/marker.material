@@ -6,7 +6,7 @@ material aruco_marker_4
     {
       texture_unit
       {
-        texture marker_4.png
+        texture aruco-584.png
         filtering anisotropic
         max_anisotropy 16
       }
