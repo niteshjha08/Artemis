@@ -1,5 +1,11 @@
 <launch>
+    <rosparam file="$(find Artemis)/config/controllers.yaml" command="load"/>
 
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
+
+    <node name="controller_spwaner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/" args= "UR5_joint_state_controller UR5_shoulder_pan_joint_controller UR5_shoulder_lift_joint_controller UR5_elbow_joint_controller UR5_wrist_1_joint_controller UR5_wrist_2_joint_controller UR5_wrist_3_joint_controller" />
+    
     <!-- Gazebo Arguments -->
     <arg name="debug" default="false"/>
     <arg name="gui" default="true"/>
