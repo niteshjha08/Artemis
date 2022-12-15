@@ -1,0 +1,11 @@
+Done processing ./include/Artemis/aruco_detector.hpp
+Done processing ./include/Artemis/move_base_action_wrapper.hpp
+Done processing ./include/Artemis/navigator.hpp
+Done processing ./include/Artemis/pick_and_place.hpp
+Done processing ./include/Artemis/task_action_client.hpp
+Done processing ./include/Artemis/task_action_server.hpp
+Done processing ./include/Artemis/wms_service_client.hpp
+Done processing ./include/Artemis/wms_service_server.hpp
+Total errors found: 3
+
+Above errors are not removable as it asks for a const parameter but ROS does not allow it

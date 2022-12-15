@@ -1,0 +1,5 @@
+<launch>
+
+<test test-name="artemis_test" pkg="Artemis" type="artemis_test"/>
+
+</launch>

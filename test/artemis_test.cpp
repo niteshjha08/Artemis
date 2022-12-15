@@ -24,53 +24,49 @@
 /**
  * @copyright Copyright (c) 2022 Nitesh Jha, Tanuj Thakkar
  *
- * @file navigator.hpp
- * @author Nitesh Jha (Driver), Tanuj Thakkar (Navigator)
- * @brief This file contains the declaration of the PickAndPlace class
+ * @file test.cpp
+ * @author Nitesh Jha (Navigator), Tanuj Thakkar (Driver)
+ * @brief This file contains the tests for the Artemis package
  *
  */
 
-#pragma once
-
-#include <gazebo_ros_link_attacher/Attach.h>
-#include <gazebo_ros_link_attacher/AttachRequest.h>
-#include <gazebo_ros_link_attacher/AttachResponse.h>
+#include <gtest/gtest.h>
 #include <ros/ros.h>
-#include <std_msgs/Float64.h>
+#include <wms_service_server.hpp>
+#include <pick_and_place.hpp>
+#include <task_action_server.hpp>
 
-#include <string>
 
-namespace Artemis {
-/**
- * @brief This class is used to pick and place the cargo
- * 
- */
-class PickAndPlace {
- public:
-  explicit PickAndPlace(const ros::NodeHandle& node_handle);
+TEST(WMSServer, test_wms_server) {
+  ros::NodeHandle nh;
+  const std::string service_name = "wms_server";
+  Artemis::WMSServiceServer wms_service_server(nh, service_name);
+  ASSERT_NO_THROW(wms_service_server);
+}
 
-  ~PickAndPlace();
-  /**
-   * @brief This function is used to pick the cargo
-   * 
-   * @param task_id 
-   */
- 
-  void pickCargo(int task_id);
-  /**
-   * @brief This function is used to place the cargo
-   * 
-   * @param task_id 
-   */
+TEST(PickPlace, pick_test) {
+  ros::NodeHandle nh;
+  Artemis::PickAndPlace pick_and_place_(nh);
+  ASSERT_NO_THROW(pick_and_place_);
+}
 
-  void placeCargo(int task_id);
+TEST(PickPlace, place_test) {
+  ros::NodeHandle nh;
+  Artemis::PickAndPlace pick_and_place_(nh);
+  ASSERT_NO_THROW(pick_and_place_.placeCargo(2));
+}
 
- private:
-  ros::NodeHandle node_handle_;       // NodeHandle for the node
-  ros::Publisher shoulder_pub_;       // Publisher for shoulder joint
-  ros::Publisher elbow_pub_;          // Publisher for elbow joint
-  ros::ServiceClient attach_client_;  // Service client for attaching
-  ros::ServiceClient detach_client_;  // Service client for detaching
-};
 
-}  // namespace Artemis
+TEST(task_Action_server, action_server) {
+  ros::NodeHandle nh;
+  const std::string action_name = "action_server";
+  Artemis::TaskActionServer asrv(nh, action_name);
+  const Artemis::TaskGoalConstPtr task_goal;
+  ASSERT_NO_THROW(asrv.executeTask(task_goal));
+}
+
+int main(int argc, char **argv) {
+  ros::init(argc, argv, "artemis_test");
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
