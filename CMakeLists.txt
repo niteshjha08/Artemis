@@ -53,7 +53,8 @@ set(artemis_src
   src/task_action_client.cpp
   src/move_base_action_wrapper.cpp
   src/navigator.cpp
-  src/aruco_detector.cpp)
+  src/aruco_detector.cpp
+  src/pick_and_place.cpp)
 
 add_library(artemis_lib ${artemis_src})
 
