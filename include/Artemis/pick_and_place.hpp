@@ -44,8 +44,7 @@ namespace Artemis {
 
     class PickAndPlace {
     public:
-    PickAndPlace(const ros::NodeHandle& node_handle,
-                   const std::string& action_name);
+    PickAndPlace(const ros::NodeHandle& node_handle);
 
     ~PickAndPlace();
 
@@ -54,7 +53,6 @@ namespace Artemis {
     void placeCargo(int task_id);
 
     private:
-        std::string action_name_;
         ros::NodeHandle node_handle_;       // NodeHandle for the node
         ros::Publisher shoulder_pub_;     // Publisher for shoulder joint
         ros::Publisher elbow_pub_;        // Publisher for elbow joint

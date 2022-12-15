@@ -34,15 +34,14 @@
 
 namespace Artemis {
 
-    PickAndPlace::PickAndPlace(const ros::NodeHandle& node_handle,
-                    const std::string& action_name) : action_name_(action_name), node_handle_(node_handle) {
+    PickAndPlace::PickAndPlace(const ros::NodeHandle& node_handle) : node_handle_(node_handle) {
             shoulder_pub_ = node_handle_.advertise<std_msgs::Float64>(
         "/UR5_shoulder_lift_joint_controller/command", 10);
         elbow_pub_ = node_handle_.advertise<std_msgs::Float64>(
         "/UR5_shoulder_lift_joint_controller/command", 10);
 
-        attach_client_ = node_handle_.serviceClient<gazebo_ros_link_attacher::Attach>("link_attacher_node/attach");
-        detach_client_ = node_handle_.serviceClient<gazebo_ros_link_attacher::Attach>("link_attacher_node/detach");
+        attach_client_ = node_handle_.serviceClient<gazebo_ros_link_attacher::Attach>("/link_attacher_node/attach");
+        detach_client_ = node_handle_.serviceClient<gazebo_ros_link_attacher::Attach>("/link_attacher_node/detach");
 
         while(!attach_client_.waitForExistence(ros::Duration(1.0))) {
             ROS_INFO("Waiting for the attach service to come up");
@@ -55,27 +54,29 @@ namespace Artemis {
     }
 
     void PickAndPlace::pickCargo(int task_id) {
-        double angle = 0;
+        ROS_ERROR_STREAM("calling attach service");
+        double angle = -1.57;
         double increment = -0.1;
         double shoulder_pick_pose = -3.3;
         std_msgs::Float64 pubMsg;
+        ros::Rate rate(1);
         while(angle > shoulder_pick_pose) {
             // shoulder_pub_.publish(angle);
             angle += increment;
             pubMsg.data = angle;
             shoulder_pub_.publish(pubMsg);
+            rate.sleep();
         }
         pubMsg.data = -0.2;
-        elbow_pub_.publish(pubMsg);
+        // elbow_pub_.publish(pubMsg);
 
         // Call attach service
         gazebo_ros_link_attacher::Attach attach_req;
         attach_req.request.model_name_1 = "husky";
         attach_req.request.link_name_1 = "ur_arm_wrist_3_link";
-
-        attach_req.request.model_name_2 = std::to_string(task_id);
+        attach_req.request.model_name_2 = "Box_Aruco_" + std::to_string(task_id);
         attach_req.request.link_name_2 = "link";
-        if (detach_client_.call(attach_req)) {
+        if (attach_client_.call(attach_req)) {
             ROS_INFO_STREAM("Picked cargo successfully");
         } else {
             ROS_ERROR_STREAM("Failed to call attach service");
@@ -84,13 +85,13 @@ namespace Artemis {
     }
 
     void PickAndPlace::placeCargo(int task_id) {
+        ROS_ERROR_STREAM("calling detach service");
 
         // Call detach service
         gazebo_ros_link_attacher::Attach detach_req;
         detach_req.request.model_name_1 = "husky";
         detach_req.request.link_name_1 = "ur_arm_wrist_3_link";
-
-        detach_req.request.model_name_2 = std::to_string(task_id);
+        detach_req.request.model_name_2 = "Box_Aruco_" + std::to_string(task_id);
         detach_req.request.link_name_2 = "link";
         if (detach_client_.call(detach_req)) {
             ROS_INFO_STREAM("Placed cargo successfully");
@@ -100,16 +101,18 @@ namespace Artemis {
 
         double angle = -3.3;
         double increment = 0.1;
-        double shoulder_place_pose = 0;
+        double shoulder_place_pose = -1.57;
         std_msgs::Float64 pubMsg;
+        ros::Rate rate(1);
         while(angle < shoulder_place_pose) {
             // shoulder_pub_.publish(angle);
             angle += increment;
             pubMsg.data = angle;
             shoulder_pub_.publish(pubMsg);
+            rate.sleep();
         }
-        pubMsg.data = 0;
-        elbow_pub_.publish(pubMsg);
+        // pubMsg.data = 0;
+        // elbow_pub_.publish(pubMsg);
         
     }
 }  // namespace Artemis

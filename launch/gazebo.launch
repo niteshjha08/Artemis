@@ -45,10 +45,10 @@
     <include file="$(find husky_navigation)/launch/move_base.launch" />
 
     <!-- Spawn Cargo -->
-    <node name="spawn_cargo_1" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_1/model.sdf -model Box_Aruco_1 -x -0.375 -y 5.558 -z 0.160 -R 0 -P 0 -Y 0"  />
-    <node name="spawn_cargo_2" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_2/model.sdf -model Box_Aruco_2 -x -1.069 -y 5.035 -z 0.160 -R 0 -P 0 -Y 0"  />
-    <node name="spawn_cargo_3" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_3/model.sdf -model Box_Aruco_3 -x -1.105 -y 5.964 -z 0.160 -R 0 -P 0 -Y 0"  />
-    <node name="spawn_cargo_4" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_4/model.sdf -model Box_Aruco_4 -x -1.4703 -y 5.606 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_1" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_1/model.sdf -model Box_Aruco_581 -x -0.375 -y 5.558 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_2" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_2/model.sdf -model Box_Aruco_582 -x -1.069 -y 5.035 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_3" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_3/model.sdf -model Box_Aruco_583 -x -1.105 -y 5.964 -z 0.160 -R 0 -P 0 -Y 0"  />
+    <node name="spawn_cargo_4" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_4/model.sdf -model Box_Aruco_584 -x -1.4703 -y 5.606 -z 0.160 -R 0 -P 0 -Y 0"  />
     <!-- <node name="spawn_sdf" pkg="gazebo_ros" type="spawn_model" args="-sdf -file $(find Artemis)/models/aruco_box_1/model.sdf -model Box_Aruco_1 -x 0.444 -y -3.986 -z 0.109 -R 0 -P 0 -Y 0"  /> -->
 
     <!-- Aruco Detect -->
@@ -77,5 +77,7 @@
 
     <!-- Rviz Node -->
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find Artemis)/rviz/artemis.rviz"/>
+
+    <node pkg="rostopic" type="rostopic" name="rostopic" args="pub /UR5_shoulder_lift_joint_controller/command std_msgs/Float64 'data: -1.57'" />
 
 </launch>
