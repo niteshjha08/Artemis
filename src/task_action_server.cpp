@@ -63,7 +63,8 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
   ROS_INFO_STREAM("TaskActionServer ("
                   << action_name_ << "): Task request received. Executing...");
 
-  ArucoDetector aruco_detector(node_handle_, task_goal->ID, "fiducial_transforms");
+  ArucoDetector aruco_detector(node_handle_, task_goal->ID,
+                               "aruco_marker_publisher/markers");
   geometry_msgs::PoseStamped task_pose;
   bool detected = false;
   int count = 0;
@@ -111,7 +112,6 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
             break;
           }
         }
-
       } else {
         ROS_ERROR_STREAM("TaskActionServer ("
                          << action_name_
@@ -120,8 +120,28 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
         return;
       }
     }
-
     ros::Duration(0.1).sleep();  // Sleep for 100 ms
+  }
+
+  //
+
+  // Navigate to the goal
+  ROS_INFO_STREAM("TaskActionServer (" << action_name_
+                                       << "): Navigating to goal");
+  task_feedback_.process_status = "NAVIGATING";
+  geometry_msgs::PoseStamped goal;
+  goal.header.frame_id = "map";
+  goal.header.stamp = ros::Time::now();
+  goal.pose = task_goal->goal;
+  if (navigator_.navigate(goal)) {
+    ROS_INFO_STREAM("TaskActionServer (" << action_name_ << "): Reached goal");
+    task_feedback_.process_status = "SERVICE";
+    task_result_.SUCCESS = true;
+    task_action_server_.setSucceeded(task_result_);
+  } else {
+    ROS_ERROR_STREAM("TaskActionServer (" << action_name_
+                                          << "): Failed to navigate to goal");
+    task_action_server_.setAborted();
   }
 }
 
