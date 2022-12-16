@@ -61,8 +61,9 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
   ROS_INFO_STREAM("TaskActionServer ("
                   << action_name_ << "): Task request received. Executing...");
 
-  std::shared_ptr<MoveBaseActionWrapper>
-      move_base_wrapper_ = std::make_shared<MoveBaseActionWrapper>("move_base", true);  // MoveBaseWrapper object
+  std::shared_ptr<MoveBaseActionWrapper> move_base_wrapper_ =
+      std::make_shared<MoveBaseActionWrapper>("move_base",
+                                              true);  // MoveBaseWrapper object
   Navigator navigator_(move_base_wrapper_);
   ArucoDetector aruco_detector(node_handle_, task_goal->ID,
                                "aruco_marker_publisher/markers");

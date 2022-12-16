@@ -84,7 +84,6 @@ void PickAndPlace::pickCargo(int task_id) {
 }
 
 void PickAndPlace::placeCargo(int task_id) {
-
   while (!attach_client_.waitForExistence(ros::Duration(1.0))) {
     ROS_INFO("Waiting for the attach service to come up");
   }

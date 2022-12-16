@@ -32,15 +32,15 @@
 
 #include <gtest/gtest.h>
 #include <ros/ros.h>
-#include <wms_service_server.hpp>
-#include <pick_and_place.hpp>
-#include <task_action_server.hpp>
-#include <move_base_action_wrapper.hpp>
 #include <visualization_msgs/Marker.h>
-#include <wms_service_client.hpp>
-// #include <wms_task.hpp>
-#include <thread>
 
+#include <move_base_action_wrapper.hpp>
+#include <pick_and_place.hpp>
+#include <task_action_client.hpp>
+#include <task_action_server.hpp>
+#include <thread>
+#include <wms_service_client.hpp>
+#include <wms_service_server.hpp>
 
 TEST(WMSServer, wms_server_init) {
   ros::NodeHandle nh;
@@ -56,7 +56,6 @@ TEST(WMSServer, wms_server_assign_task) {
   Artemis::WMSTask::Request wms_req;
   Artemis::WMSTask::Response wms_res;
   ASSERT_TRUE(wms_service_server.assignTask(wms_req, wms_res));
-  // ASSERT_NO_THROW(wms_service_server); 
 }
 
 TEST(WMSServer, wms_server_assign_task_exhaust_tasks) {
@@ -65,22 +64,18 @@ TEST(WMSServer, wms_server_assign_task_exhaust_tasks) {
   Artemis::WMSServiceServer wms_service_server(nh, service_name);
   Artemis::WMSTask::Request wms_req;
   Artemis::WMSTask::Response wms_res;
-  for(int i = 0; i < 4; i++)
-    wms_service_server.assignTask(wms_req, wms_res);
+  for (int i = 0; i < 4; i++) wms_service_server.assignTask(wms_req, wms_res);
   ASSERT_FALSE(wms_service_server.assignTask(wms_req, wms_res));
-  // ASSERT_NO_THROW(wms_service_server);
 }
 
 TEST(PickPlace, pick_test) {
   ros::NodeHandle nh;
-  // Artemis::PickAndPlace pick_and_place_(nh);
   ASSERT_NO_THROW(Artemis::PickAndPlace pick_and_place_(nh));
 }
 
 TEST(Navigator, navigator_init) {
   ros::NodeHandle nh;
-  std::shared_ptr<Artemis::MoveBaseActionWrapper>
-      move_base_wrapper_;
+  std::shared_ptr<Artemis::MoveBaseActionWrapper> move_base_wrapper_;
   Artemis::Navigator navigator_(move_base_wrapper_);
   ASSERT_NO_THROW(navigator_);
 }
@@ -98,8 +93,9 @@ TEST(Aruco_detector, detector_test) {
   marker.pose.pose.position.z = 1;
   aruco_msgs::MarkerArray msg;
   msg.markers.push_back(marker);
-  
-  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 1);
+
+  ros::Publisher pub =
+      nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 1);
   ASSERT_NO_THROW(pub.publish(msg));
 }
 
@@ -116,23 +112,22 @@ TEST(Aruco_detector2, detector_set_pose_test) {
   marker.pose.pose.position.z = 1;
   aruco_msgs::MarkerArray msg;
   msg.markers.push_back(marker);
-  
-  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 1);
+
+  ros::Publisher pub =
+      nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 1);
   pub.publish(msg);
   ASSERT_NO_THROW(aruco_detector.setTaskPose());
 }
-
 
 TEST(ArucoDetectiontest, testdetect) {
   ros::NodeHandle nh;
   int task_id = 2;
   std::string detection_topic = "/test_topic";
   Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
-  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
-  int count = 0;
- 
+  ros::Publisher pub =
+      nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
+
   aruco_msgs::Marker marker;
-  // visualization_msgs::Marker marker2;
   marker.id = 2;
   marker.pose.pose.position.x = 1.0;
   marker.pose.pose.position.y = 1;
@@ -147,16 +142,14 @@ TEST(ArucoDetectiontest, testdetect) {
   marker_msg_->header.frame_id = "reference_frame_";
   marker_msg_->header.seq = 0;
   marker_msg_->header.stamp = ros::Time::now();
-  // marker_msg_->markerspush_back(marker);
   marker_msg_->markers.push_back(marker);
-   for(int i = 0; i<10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     pub.publish(marker_msg_);
     ros::spinOnce();
   }
   geometry_msgs::PoseStamped task_pose = aruco_detector.getTaskPose();
   ASSERT_EQ(task_pose.header.frame_id, "map");
   ASSERT_EQ(task_pose.pose.position.x, 1);
-
 }
 TEST(WMSClient, wms_client_init) {
   ros::NodeHandle nh;
@@ -164,36 +157,23 @@ TEST(WMSClient, wms_client_init) {
 
   const std::string service_name = "wms_server";
   Artemis::WMSServiceClient wms_client(nh, service_name);
-  
-  ASSERT_NO_THROW(wms_client); 
+
+  ASSERT_NO_THROW(wms_client);
 }
 
-class WMSClientTest : public ::testing::Test {
- protected:
+TEST(TaskActionServerTest, task_action_server_init) {
   ros::NodeHandle nh;
-  Artemis::WMSServiceServer wms_service_server;
-  const std::string service_name = "wms_server";
-  // Artemis::WMSServiceClient wms_client;
-  WMSClientTest() :  wms_service_server(nh, service_name) {}
-};
-
-
-// TEST_F(WMSClientTest, wms_client_init2) {
-//   ros::NodeHandle nh;
-//   const std::string service_name = "wms_server";
-//   Artemis::WMSServiceClient wms_service_client(nh, service_name);
-//   Artemis::WMSTask task;
-//   bool res  = wms_service_client.receiveTask(task);
-//   ASSERT_TRUE(res);
-// }
-
+  std::string action_name = "action_server";
+  Artemis::TaskActionServer task_action_server_(nh, action_name);
+  ASSERT_NO_THROW(task_action_server_);
+}
 
 TEST(ArucoDetectiontest2, init_detected_value) {
   ros::NodeHandle nh;
   int task_id = 2;
   std::string detection_topic = "/test_topic";
   Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
-  
+
   ASSERT_EQ(aruco_detector.isDetected(), false);
 }
 
@@ -202,11 +182,10 @@ TEST(ArucoDetectiontest123, testdetect) {
   int task_id = 2;
   std::string detection_topic = "/test_topic";
   Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
-  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
-  int count = 0;
+  ros::Publisher pub =
+      nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
 
   aruco_msgs::Marker marker;
-  // visualization_msgs::Marker marker2;
   marker.id = 2;
   marker.pose.pose.position.x = 1.0;
   marker.pose.pose.position.y = 1;
@@ -223,29 +202,12 @@ TEST(ArucoDetectiontest123, testdetect) {
   marker_msg_->header.stamp = ros::Time::now();
   // marker_msg_->markerspush_back(marker);
   marker_msg_->markers.push_back(marker);
-   for(int i = 0; i<10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     pub.publish(marker_msg_);
     ros::spinOnce();
   }
   ASSERT_EQ(aruco_detector.isDetected(), true);
-
 }
-
-// TEST(TaskActionServer_test, task_action_server_init) {
-//   ros::NodeHandle nh;
-//   std::string action_name = "action_server";
-//   Artemis::TaskActionServer task_action_server_(nh, action_name);
-//   ASSERT_NO_THROW(task_action_server_);
-// }
-
-
-// TEST(task_Action_server, action_server) {
-//   ros::NodeHandle nh;
-//   const std::string action_name = "action_server";
-//   Artemis::TaskActionServer asrv(nh, action_name);
-//   const Artemis::TaskGoalConstPtr task_goal;
-//   ASSERT_NO_THROW(asrv.executeTask(task_goal));
-// }
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "artemis_test");

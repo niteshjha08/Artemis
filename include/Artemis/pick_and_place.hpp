@@ -43,7 +43,7 @@
 namespace Artemis {
 /**
  * @brief This class is used to pick and place the cargo
- * 
+ *
  */
 class PickAndPlace {
  public:
@@ -52,15 +52,15 @@ class PickAndPlace {
   ~PickAndPlace();
   /**
    * @brief This function is used to pick the cargo
-   * 
-   * @param task_id 
+   *
+   * @param task_id
    */
- 
+
   void pickCargo(int task_id);
   /**
    * @brief This function is used to place the cargo
-   * 
-   * @param task_id 
+   *
+   * @param task_id
    */
 
   void placeCargo(int task_id);

@@ -6,6 +6,16 @@ Done processing ./include/Artemis/task_action_client.hpp
 Done processing ./include/Artemis/task_action_server.hpp
 Done processing ./include/Artemis/wms_service_client.hpp
 Done processing ./include/Artemis/wms_service_server.hpp
+Done processing ./src/artemis_node.cpp
+Done processing ./src/aruco_detector.cpp
+Done processing ./src/move_base_action_wrapper.cpp
+Done processing ./src/navigator.cpp
+Done processing ./src/pick_and_place.cpp
+Done processing ./src/task_action_client.cpp
+Done processing ./src/task_action_server.cpp
+Done processing ./src/task_server_node.cpp
+Done processing ./src/wms_server_node.cpp
+Done processing ./src/wms_service_client.cpp
+Done processing ./src/wms_service_server.cpp
+Done processing ./test/artemis_test.cpp
 Total errors found: 3
-
-Above errors are not removable as it asks for a const parameter but ROS does not allow it
