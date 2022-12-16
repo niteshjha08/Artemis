@@ -24,62 +24,53 @@
 /**
  * @copyright Copyright (c) 2022 Nitesh Jha, Tanuj Thakkar
  *
- * @file task_action_server.hpp
- * @author Nitesh Jha (Navigator), Tanuj Thakkar (Driver)
- * @brief This file contains the declaration of the TaskActionServer class
+ * @file navigator.hpp
+ * @author Nitesh Jha (Driver), Tanuj Thakkar (Navigator)
+ * @brief This file contains the declaration of the PickAndPlace class
  *
  */
 
 #pragma once
 
-#include <Artemis/TaskAction.h>
-#include <actionlib/server/simple_action_server.h>
-#include <geometry_msgs/PoseStamped.h>
+#include <gazebo_ros_link_attacher/Attach.h>
+#include <gazebo_ros_link_attacher/AttachRequest.h>
+#include <gazebo_ros_link_attacher/AttachResponse.h>
 #include <ros/ros.h>
+#include <std_msgs/Float64.h>
 
-#include <aruco_detector.hpp>
-#include <memory>
-#include <move_base_action_wrapper.hpp>
-#include <navigator.hpp>
-#include <pick_and_place.hpp>
 #include <string>
 
 namespace Artemis {
-
 /**
- * @brief This class is used to create an action server for the task
- *        action server
+ * @brief This class is used to pick and place the cargo
+ *
  */
-class TaskActionServer {
- protected:
-  ros::NodeHandle node_handle_;  // Node handle for the task action server
-  std::string action_name_;      // Action name
-  actionlib::SimpleActionServer<Artemis::TaskAction>
-      task_action_server_;  // Task action server
-
-  Artemis::TaskFeedback task_feedback_;  // Task feedback
-  Artemis::TaskResult task_result_;      // Task result
-
+class PickAndPlace {
  public:
-  /**
-   * @brief Constructor for the TaskActionServer class
-   */
-  TaskActionServer(const ros::NodeHandle& node_handle,
-                   const std::string& action_name);
+  explicit PickAndPlace(const ros::NodeHandle& node_handle);
 
+  ~PickAndPlace();
   /**
-   * @brief Destructor for the TaskActionServer class
+   * @brief This function is used to pick the cargo
+   *
+   * @param task_id
    */
-  ~TaskActionServer();
 
+  void pickCargo(int task_id);
   /**
-   * @brief This function is used to execute the task action server
-   * @param task_goal The goal of the task action server
+   * @brief This function is used to place the cargo
+   *
+   * @param task_id
    */
-  void executeTask(const Artemis::TaskGoalConstPtr& task_goal);
+
+  void placeCargo(int task_id);
 
  private:
-  PickAndPlace pick_and_place_;  // PickAndPlace object
+  ros::NodeHandle node_handle_;       // NodeHandle for the node
+  ros::Publisher shoulder_pub_;       // Publisher for shoulder joint
+  ros::Publisher elbow_pub_;          // Publisher for elbow joint
+  ros::ServiceClient attach_client_;  // Service client for attaching
+  ros::ServiceClient detach_client_;  // Service client for detaching
 };
 
 }  // namespace Artemis
