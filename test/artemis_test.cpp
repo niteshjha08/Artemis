@@ -36,6 +36,7 @@
 #include <pick_and_place.hpp>
 #include <task_action_server.hpp>
 #include <move_base_action_wrapper.hpp>
+#include <visualization_msgs/Marker.h>
 
 
 TEST(WMSServer, wms_server_init) {
@@ -99,7 +100,137 @@ TEST(Aruco_detector, detector_test) {
   ASSERT_NO_THROW(pub.publish(msg));
 }
 
+TEST(Aruco_detector2, detector_set_pose_test) {
+  ros::NodeHandle nh;
+  int task_id = 2;
+  std::string detection_topic = "test_topic";
+  Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
 
+  aruco_msgs::Marker marker;
+  marker.id = 1;
+  marker.pose.pose.position.x = 1;
+  marker.pose.pose.position.y = 1;
+  marker.pose.pose.position.z = 1;
+  aruco_msgs::MarkerArray msg;
+  msg.markers.push_back(marker);
+  
+  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 1);
+  pub.publish(msg);
+  ASSERT_NO_THROW(aruco_detector.setTaskPose());
+}
+
+// TEST(Aruco_detector3, detector_get_pose_test) {
+//   ros::NodeHandle nh;
+//   int task_id = 2;
+//   ROS_INFO_STREAM("testing ==========================");
+//   std::string detection_topic = "/test_topic";
+//   Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
+//   ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
+
+//   aruco_msgs::Marker marker;
+//   marker.id = 2;
+//   marker.pose.pose.position.x = 1.0;
+//   marker.pose.pose.position.y = 1;
+//   marker.pose.pose.position.z = 1;
+//   marker.pose.pose.orientation.x = 1;
+//   marker.pose.pose.orientation.y = 1;
+//   marker.pose.pose.orientation.z = 1;
+//   marker.pose.pose.orientation.w = 1;
+
+
+//   aruco_msgs::MarkerArray msg;
+//   msg.markers.push_back(marker);
+//   pub.publish(msg);
+//   ros::spinOnce();
+//   ros::Duration(1).sleep();
+//   aruco_detector.setTaskPose();
+
+//   geometry_msgs::PoseStamped task_pose = aruco_detector.getTaskPose();
+//   ASSERT_EQ(task_pose.pose.position.x, 1);
+//   ASSERT_EQ(task_pose.pose.position.y, 1);
+//   ASSERT_EQ(task_pose.pose.position.z, 1);
+// }
+
+TEST(ArucoDetectiontest, testdetect) {
+  ros::NodeHandle nh;
+  int task_id = 2;
+  std::string detection_topic = "/test_topic";
+  Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
+  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
+  int count = 0;
+ 
+  
+
+  aruco_msgs::Marker marker;
+  // visualization_msgs::Marker marker2;
+  marker.id = 2;
+  marker.pose.pose.position.x = 1.0;
+  marker.pose.pose.position.y = 1;
+  marker.pose.pose.position.z = 1;
+  marker.pose.pose.orientation.x = 1;
+  marker.pose.pose.orientation.y = 1;
+  marker.pose.pose.orientation.z = 1;
+  marker.pose.pose.orientation.w = 1;
+
+  aruco_msgs::MarkerArray::Ptr marker_msg_;
+  marker_msg_ = aruco_msgs::MarkerArray::Ptr(new aruco_msgs::MarkerArray());
+  marker_msg_->header.frame_id = "reference_frame_";
+  marker_msg_->header.seq = 0;
+  marker_msg_->header.stamp = ros::Time::now();
+  // marker_msg_->markerspush_back(marker);
+  marker_msg_->markers.push_back(marker);
+   for(int i = 0; i<10; ++i) {
+    pub.publish(marker_msg_);
+    ros::spinOnce();
+  }
+  geometry_msgs::PoseStamped task_pose = aruco_detector.getTaskPose();
+  ASSERT_EQ(task_pose.header.frame_id, "map");
+  ASSERT_EQ(task_pose.pose.position.x, 1);
+
+}
+
+TEST(ArucoDetectiontest2, init_detected_value) {
+  ros::NodeHandle nh;
+  int task_id = 2;
+  std::string detection_topic = "/test_topic";
+  Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
+  
+  ASSERT_EQ(aruco_detector.isDetected(), false);
+}
+
+TEST(ArucoDetectiontest123, testdetect) {
+  ros::NodeHandle nh;
+  int task_id = 2;
+  std::string detection_topic = "/test_topic";
+  Artemis::ArucoDetector aruco_detector(nh, task_id, detection_topic);
+  ros::Publisher pub = nh.advertise<aruco_msgs::MarkerArray>(detection_topic, 100);
+  int count = 0;
+
+  aruco_msgs::Marker marker;
+  // visualization_msgs::Marker marker2;
+  marker.id = 2;
+  marker.pose.pose.position.x = 1.0;
+  marker.pose.pose.position.y = 1;
+  marker.pose.pose.position.z = 1;
+  marker.pose.pose.orientation.x = 1;
+  marker.pose.pose.orientation.y = 1;
+  marker.pose.pose.orientation.z = 1;
+  marker.pose.pose.orientation.w = 1;
+
+  aruco_msgs::MarkerArray::Ptr marker_msg_;
+  marker_msg_ = aruco_msgs::MarkerArray::Ptr(new aruco_msgs::MarkerArray());
+  marker_msg_->header.frame_id = "reference_frame_";
+  marker_msg_->header.seq = 0;
+  marker_msg_->header.stamp = ros::Time::now();
+  // marker_msg_->markerspush_back(marker);
+  marker_msg_->markers.push_back(marker);
+   for(int i = 0; i<10; ++i) {
+    pub.publish(marker_msg_);
+    ros::spinOnce();
+  }
+  ASSERT_EQ(aruco_detector.isDetected(), true);
+
+}
 
 // TEST(TaskActionServer_test, task_action_server_init) {
 //   ros::NodeHandle nh;
@@ -107,9 +238,6 @@ TEST(Aruco_detector, detector_test) {
 //   Artemis::TaskActionServer task_action_server_(nh, action_name);
 //   ASSERT_NO_THROW(task_action_server_);
 // }
-
-
-
 
 
 // TEST(task_Action_server, action_server) {
@@ -121,7 +249,7 @@ TEST(Aruco_detector, detector_test) {
 // }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "artemis_test123");
+  ros::init(argc, argv, "artemis_test");
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
