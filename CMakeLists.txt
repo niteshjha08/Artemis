@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   tf2
   tf2_ros
+  gazebo_ros_link_attacher
 )
 
 find_package(Boost REQUIRED COMPONENTS system thread)
