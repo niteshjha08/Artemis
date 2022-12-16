@@ -38,9 +38,6 @@ TaskActionServer::TaskActionServer(const ros::NodeHandle& node_handle,
                                    const std::string& action_name)
     : node_handle_(node_handle),
       action_name_(action_name),
-      move_base_wrapper_(
-          std::make_shared<MoveBaseActionWrapper>("move_base", true)),
-      navigator_(move_base_wrapper_),
       pick_and_place_(node_handle),
       task_action_server_(node_handle_, action_name,
                           boost::bind(&TaskActionServer::executeTask, this, _1),
@@ -64,6 +61,9 @@ void TaskActionServer::executeTask(const Artemis::TaskGoalConstPtr& task_goal) {
   ROS_INFO_STREAM("TaskActionServer ("
                   << action_name_ << "): Task request received. Executing...");
 
+  std::shared_ptr<MoveBaseActionWrapper>
+      move_base_wrapper_ = std::make_shared<MoveBaseActionWrapper>("move_base", true);  // MoveBaseWrapper object
+  Navigator navigator_(move_base_wrapper_);
   ArucoDetector aruco_detector(node_handle_, task_goal->ID,
                                "aruco_marker_publisher/markers");
   geometry_msgs::PoseStamped task_pose;

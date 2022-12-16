@@ -79,10 +79,6 @@ class TaskActionServer {
   void executeTask(const Artemis::TaskGoalConstPtr& task_goal);
 
  private:
-  std::shared_ptr<MoveBaseActionWrapper>
-      move_base_wrapper_;  // MoveBaseWrapper object
-  Navigator navigator_;    // Navigator object
-  // ArucoDetector aruco_detector_;  // ArucoDetector object
   PickAndPlace pick_and_place_;  // PickAndPlace object
 };
 
