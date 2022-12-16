@@ -165,7 +165,7 @@ TEST(WMSClient, wms_client_init) {
   const std::string service_name = "wms_server";
   Artemis::WMSServiceClient wms_client(nh, service_name);
   
-  ASSERT_NO_THROW(wms_client); // Artemis::WMSTask& task
+  ASSERT_NO_THROW(wms_client); 
 }
 
 class WMSClientTest : public ::testing::Test {
@@ -174,26 +174,16 @@ class WMSClientTest : public ::testing::Test {
   Artemis::WMSServiceServer wms_service_server;
   const std::string service_name = "wms_server";
   // Artemis::WMSServiceClient wms_client;
-  WMSClientTest() : nh(), wms_service_server(nh, service_name) {}
+  WMSClientTest() :  wms_service_server(nh, service_name) {}
 };
 
 
-TEST_F(WMSClientTest, wms_client_init2) {
-  ros::NodeHandle nh;
-  const std::string service_name = "wms_server";
-  Artemis::WMSServiceClient wms_service_client(nh, service_name);
-  Artemis::WMSTask task;
-  bool res  = wms_service_client.receiveTask(task);
-  ASSERT_TRUE(res);
-}
-// TEST(WMSClient2, wms_client_receive_task) {
+// TEST_F(WMSClientTest, wms_client_init2) {
 //   ros::NodeHandle nh;
 //   const std::string service_name = "wms_server";
-//   Artemis::WMSServiceClient wms_client(nh, service_name);
-//   bool res = false;
+//   Artemis::WMSServiceClient wms_service_client(nh, service_name);
 //   Artemis::WMSTask task;
-//   res = wms_client.receiveTask(task);
-
+//   bool res  = wms_service_client.receiveTask(task);
 //   ASSERT_TRUE(res);
 // }
 

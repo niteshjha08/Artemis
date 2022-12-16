@@ -1,5 +1,5 @@
 <launch>
-<!-- <node pkg="Artemis" type="wms_server_node" name="wms_server_node" output="screen"/> -->
+<node pkg="Artemis" type="wms_server_node" name="wms_server_node" output="screen"/>
 <test test-name="artemis_test" pkg="Artemis" type="artemis_test"/>
  <!-- WMS Server Node -->
 
