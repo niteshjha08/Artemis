@@ -84,6 +84,7 @@ add_executable(artemis_node src/artemis_node.cpp ${artemis_src})
 target_link_libraries(artemis_node
   # artemis_lib
   ${catkin_LIBRARIES})
+
 add_dependencies(artemis_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 if (CATKIN_ENABLE_TESTING)
@@ -92,3 +93,4 @@ if (CATKIN_ENABLE_TESTING)
   target_link_libraries(artemis_test ${catkin_LIBRARIES})
   add_dependencies(artemis_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 endif()
+
