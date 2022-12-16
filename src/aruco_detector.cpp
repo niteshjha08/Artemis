@@ -58,8 +58,8 @@ void ArucoDetector::arucoDetectCallback(
     // ROS_INFO_STREAM("ArucoDetector (" << detection_topic_ << "): Detected "
     // << msg->markers.size() << " aruco markers");
     for (auto marker : msg->markers) {
-      // ROS_INFO_STREAM("ArucoDetector (" << detection_topic_ << "): Marker ID:
-      // " << marker.id);
+      ROS_INFO_STREAM("ArucoDetector (" << detection_topic_
+                                        << "): Marker ID:" << marker.id);
       if (marker.id == task_id_) {
         detected_ = true;
         ROS_INFO_STREAM("ArucoDetector ("

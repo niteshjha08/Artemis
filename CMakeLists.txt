@@ -53,7 +53,9 @@ set(artemis_src
   src/task_action_client.cpp
   src/move_base_action_wrapper.cpp
   src/navigator.cpp
-  src/aruco_detector.cpp)
+  src/aruco_detector.cpp
+  src/pick_and_place.cpp)
+  
 
 # add_library(artemis_lib ${artemis_src})
 
@@ -82,4 +84,13 @@ add_executable(artemis_node src/artemis_node.cpp ${artemis_src})
 target_link_libraries(artemis_node
   # artemis_lib
   ${catkin_LIBRARIES})
+
 add_dependencies(artemis_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest_gtest(artemis_test test/artemis_test.test test/artemis_test.cpp ${artemis_src})
+  target_link_libraries(artemis_test ${catkin_LIBRARIES})
+  add_dependencies(artemis_test ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+endif()
+

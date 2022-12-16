@@ -52,8 +52,8 @@ class MoveBaseActionWrapper {
    * @param action_name Name of the action server
    * @param spin_thread Whether to spin a thread for the action server
    */
-  MoveBaseActionWrapper(const std::string& action_name,
-                        const bool& spin_thread = true);
+  explicit MoveBaseActionWrapper(const std::string& action_name,
+                                 const bool& spin_thread = true);
 
   /**
    * @brief Destroy the Move Base Action Wrapper object
